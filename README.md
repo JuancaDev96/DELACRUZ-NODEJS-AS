@@ -8,14 +8,13 @@ La API fusiona datos de la **API pública de Star Wars** con el **clima actual**
 
 ## 📦 Tecnologías utilizadas
 
-- Node.js 18
+- Node.js 20
 - TypeScript
 - Serverless Framework
 - AWS Lambda
 - API Gateway
 - DynamoDB
 - CloudWatch (logging)
-- X-Ray (trazabilidad)
 - Swagger (documentación via `serverless-aws-documentation`)
 - Rate limiting por API Gateway
 
