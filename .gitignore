@@ -1,0 +1,39 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+.env
+
+# Build
+.build/
+.serverless/
+dist/
+coverage/
+
+# TypeScript
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
+# IDEs y editores
+.vscode/
+.idea/
+
+# Tests
+coverage/
+test-results/
+
+# Serverless framework
+.serverless/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Colecciones locales (si no quieres subirlas)
+Colecciones Postman/

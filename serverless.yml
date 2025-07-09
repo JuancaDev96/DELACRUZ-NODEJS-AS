@@ -1,0 +1,188 @@
+service: reto-backend-node
+
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  region: us-east-1
+  timeout: 10
+  memorySize: 256
+  environment:
+    CACHE_TTL_MINUTES: 30
+  tracing:
+    lambda: true  
+  logs:
+    restApi: true 
+
+plugins:
+  - serverless-aws-documentation
+  - serverless-plugin-typescript
+  - serverless-offline
+
+functions:
+  fusionados:
+    handler: src/handlers/fusionados.get
+    events:
+      - http:
+          path: fusionados
+          method: get
+          throttling:
+            rateLimit: 5
+            burstLimit: 10
+    documentation:
+      summary: Fusionar datos de SWAPI y clima
+      description: Devuelve datos combinados de APIs públicas y los guarda en DynamoDB
+      tags:
+        - fusion
+      methodResponses:
+        - statusCode: "200"
+          responseBody:
+            description: Respuesta fusionada
+          responseModels:
+            'application/json': FusionResponse
+
+  almacenar:
+    handler: src/handlers/almacenar.post
+    events:
+      - http:
+          path: almacenar
+          method: post
+          throttling:
+            rateLimit: 5
+            burstLimit: 10
+    documentation:
+      summary: Almacenar datos personalizados
+      description: Permite almacenar datos personalizados en DynamoDB
+      tags:
+        - general
+      requestBody:
+        description: Objeto con nombre, comentario y planeta favorito
+      requestModels:
+        'application/json': AlmacenarRequest
+      methodResponses:
+        - statusCode: "201"
+          responseBody:
+            description: Resultado del guardado
+          responseModels:
+            'application/json': AlmacenarResponse
+
+  historial:
+    handler: src/handlers/historial.get
+    events:
+      - http:
+          path: historial
+          method: get
+          throttling:
+            rateLimit: 5
+            burstLimit: 10
+    documentation:
+      summary: Obtener historial
+      description: Devuelve el historial de datos almacenados, con caché
+      tags:
+        - general
+      methodResponses:
+        - statusCode: "200"
+          responseBody:
+            description: Historial de datos guardados
+          responseModels:
+            'application/json': HistorialResponse
+
+resources:
+  Resources:
+    FusionadosTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: Fusionados
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+        TimeToLiveSpecification:
+          AttributeName: ttl
+          Enabled: true
+
+custom:
+  serverless-offline:
+    nodeBin: node
+
+  documentation:
+    api:
+      info:
+        version: '1.0.0'
+        title: Reto Backend NodeJS
+        description: API para fusionar, almacenar y consultar datos en DynamoDB
+      tags:
+        - name: fusion
+          description: Endpoints para datos fusionados desde APIs
+        - name: general
+          description: Endpoints generales (manuales, historial)
+    models:
+      - name: AlmacenarRequest
+        contentType: application/json
+        schema:
+          type: object
+          properties:
+            nombre:
+              type: string
+            comentario:
+              type: string
+            planetaFavorito:
+              type: string
+          required:
+            - nombre
+            - comentario
+
+      - name: AlmacenarResponse
+        contentType: application/json
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+            registro:
+              type: object
+
+      - name: FusionResponse
+        contentType: application/json
+        schema:
+          type: object
+          properties:
+            id:
+              type: string
+            characterName:
+              type: string
+            planet:
+              type: string
+            height:
+              type: string
+            mass:
+              type: string
+            gender:
+              type: string
+            eye_color:
+              type: string
+            weather:
+              type: object
+              properties:
+                temperature:
+                  type: number
+                windSpeed:
+                  type: number
+            timestamp:
+              type: string
+
+      - name: HistorialResponse
+        contentType: application/json
+        schema:
+          type: object
+          properties:
+            fromCache:
+              type: boolean
+            data:
+              type: array
+              items:
+                type: object
