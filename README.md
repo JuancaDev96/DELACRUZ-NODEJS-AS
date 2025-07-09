@@ -35,17 +35,24 @@ cd reto-backend-node
 
 3. Instalar dependencias
 npm install
-4. Configurar credenciales AWS
+
+5. Configurar credenciales AWS
+   
 Ejecuta:
 aws configure
-Y coloca:
 
+Y coloca:
 AWS Access Key ID:        AKIA...        ← desde IAM
+
 AWS Secret Access Key:    00nEw...        ← desde IAM
+
 Default region name:      us-east-1
+
 Default output format:    json
 
+
 4. Crear el archivo .env
+5. 
 En la raíz del proyecto crea un archivo .env con lo siguiente:
 
 AWS_ACCESS_KEY_ID=AKIA...
@@ -54,21 +61,36 @@ AWS_REGION=us-east-1
 
 5. Desplegar a AWS ☁️
 npx serverless deploy
+
 Esto:
 
+
 Crea tus funciones Lambda
+
 Expone los endpoints vía API Gateway
+
 Crea tu tabla DynamoDB
+
 Configura logging, throttling
 
+
 6. Ejecutar localmente 🔄
+   
 npx serverless offline
+
 Esto levanta un servidor en http://localhost:3000 simulando AWS Lambda + API Gateway.
 
+
 🧪 Endpoints disponibles
+
 Método	Path	Descripción
+
 GET	/fusionados	Fusiona datos de SWAPI y clima y los guarda
+
 POST	/almacenar	Almacena un objeto personalizado
+
 GET	/historial	Devuelve el historial desde cache o base de datos
+
 POST	/login (opcional)	Devuelve token JWT para proteger endpoints
+
 
